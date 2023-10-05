@@ -75,6 +75,7 @@ def main():
             sv_id, cn0 = get_cn0(received_data)
             print(f'SATELLITE {sv_id} HAS A CN0 of {cn0}')
             append_to_csv(DATA_PATH_CN0,[time, sv_id, cn0])
+            print(time)
             write_to_influxdb('CN0_OUTPUT',{'gps_time': time, 'sv_id': sv_id, 'cn0': cn0})
         
         # get location and time
