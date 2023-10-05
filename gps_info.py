@@ -71,7 +71,7 @@ def main():
         
         # get CN0 values for specific sv
         if NMEA_SEARCH_STRING_GSV in received_data and CN0_BOOL:
-            _, _, time = get_ll(received_data)
+            lat, lon, time = get_ll(received_data)
             sv_id, cn0 = get_cn0(received_data)
             print(f'SATELLITE {sv_id} HAS A CN0 of {cn0}')
             append_to_csv(DATA_PATH_CN0,[time, sv_id, cn0])
