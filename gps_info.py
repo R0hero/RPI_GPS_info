@@ -28,12 +28,12 @@ def get_ll(received_data):
     if not lat == '':
         lat = convert_to_deg(float(lat))
     else:
-        lat = -1
+        lat = float(-1)
         
     if not lon == '':
         lon = convert_to_deg(float(lon))
     else:
-        lon = -1
+        lon = float(-1)
     return lat, lon, utc_time
 
 def convert_to_deg(raw_val):
@@ -54,11 +54,11 @@ def append_to_csv(filepath,data):
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(data)
 
-def write_to_influxdb(measurement_name,time,data):
+def write_to_influxdb(measurement_name,gps_time,data):
     json_body = [
         {
             "measurement": measurement_name,
-            "time": time,
+            "time": gps_time,
             "fields": data,
         }
     ]
