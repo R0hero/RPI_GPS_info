@@ -8,6 +8,8 @@ def get_cn0(received_data):
     GSV_string = received_data.split(',')
     sv_id = GSV_string[4]
     cn0 = GSV_string[7]
+    if cn0 == '':
+        cn0 = -1
     return sv_id, cn0
 
 def get_ll(received_data):
@@ -19,12 +21,12 @@ def get_ll(received_data):
     if not lat == '':
         lat = convert_to_deg(float(lat))
     else:
-        lat = ''
+        lat = -1
         
     if not lon == '':
         lon = convert_to_deg(float(lon))
     else:
-        lon = ''
+        lon = -1
     return lat, lon, utc_time
 
 def convert_to_deg(raw_val):
