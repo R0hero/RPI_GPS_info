@@ -8,8 +8,6 @@ def get_cn0(received_data):
     GSV_string = received_data.split(',')
     sv_id = GSV_string[4]
     cn0 = GSV_string[7]
-    if cn0 == '':
-        cn0 = np.nan
     return sv_id, cn0
 
 def get_ll(received_data):
@@ -21,12 +19,12 @@ def get_ll(received_data):
     if not lat == '':
         lat = convert_to_deg(float(lat))
     else:
-        lat = np.nan
+        lat = ''
         
     if not lon == '':
         lon = convert_to_deg(float(lon))
     else:
-        lon = np.nan
+        lon = ''
     return lat, lon, utc_time
 
 def convert_to_deg(raw_val):
@@ -79,7 +77,7 @@ def main():
             print(f'NO. OF SATELLITES USED FOR POS FIX: {no_sv}')
             append_to_csv(DATA_PATH_LOC,[time, no_sv, lat, lon])
             write_to_influxdb('LOC_OUTPUT',time,{'lat': lat, 'lon': lon, 'no_sv': no_sv})
-        
+
         # failsafe if my keyboard stops working :)
         i += 1
         if i == 1000000:
