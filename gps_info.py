@@ -1,8 +1,8 @@
 import serial
-import sys
 import numpy as np
 import os
 import csv
+from influxdb import InfluxDBClient
 
 def get_cn0(received_data):
     GSV_string = received_data.split(',')
@@ -47,6 +47,16 @@ def append_to_csv(filepath,data):
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(data)
 
+def write_to_influxdb(measurement_name,time,data):
+    json_body = [
+        {
+            "measurement": measurement_name,
+            "time": time,
+            "fields": data,
+        }
+    ]
+    CLIENT.write_points(json_body)
+
 def main():
     
     i = 0
@@ -55,9 +65,11 @@ def main():
         
         # get CN0 values for specific sv
         if NMEA_SEARCH_STRING_GSV in received_data and CN0_BOOL:
+            _, _, time = get_ll(received_data)
             sv_id, cn0 = get_cn0(received_data)
             print(f'SATELLITE {sv_id} HAS A CN0 of {cn0}')
-            append_to_csv(DATA_PATH_CN0,[sv_id, cn0])
+            append_to_csv(DATA_PATH_CN0,[time, sv_id, cn0])
+            write_to_influxdb('CN0_OUTPUT',time,{'sv_id': sv_id, 'cn0': cn0})
         
         # get location and time
         if NMEA_SEARCH_STRING_GGA in received_data and POS_BOOL:
@@ -66,6 +78,7 @@ def main():
             print(f'UTC TIME: {time}\nLAT: {lat:.4f} AND LON: {lon:.4f}')
             print(f'NO. OF SATELLITES USED FOR POS FIX: {no_sv}')
             append_to_csv(DATA_PATH_LOC,[time, no_sv, lat, lon])
+            write_to_influxdb('LOC_OUTPUT',time,{'lat': lat, 'lon': lon, 'no_sv': no_sv})
         
         # failsafe if my keyboard stops working :)
         i += 1
@@ -86,4 +99,13 @@ if __name__ == '__main__':
     DATA_PATH_CN0 = f'DATA{os.sep}CN0_OUTPUT.CSV'
     DATA_PATH_LOC = f'DATA{os.sep}LOC_OUTPUT.CSV'
     
+
+    # InfluxDB stuff
+    INFLUXDB_HOST = 'localhost'  # Update with your InfluxDB host
+    INFLUXDB_PORT = 8086         # Update with your InfluxDB port
+    INFLUX_DB = 'RPI_OUTPUT'  # Replace with your database name
+    CLIENT = InfluxDBClient(host=INFLUXDB_HOST, port=INFLUXDB_PORT)
+    CLIENT.switch_database(INFLUX_DB)
+
+
     main()
