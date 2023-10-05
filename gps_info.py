@@ -34,7 +34,7 @@ def convert_to_deg(raw_val):
     deg = int(decimal_val)
     mm_mmmm = (decimal_val - int(decimal_val))/0.6
     corr_val = deg + mm_mmmm
-    return str(corr_val)
+    return corr_val
 
 def get_no_sv(received_data):
     GGA_string = received_data.split(',')
