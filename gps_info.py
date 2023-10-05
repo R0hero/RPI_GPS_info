@@ -73,7 +73,7 @@ def main():
         if NMEA_SEARCH_STRING_GGA in received_data and POS_BOOL:
             lat, lon, time = get_ll(received_data)
             no_sv = get_no_sv(received_data)
-            print(f'UTC TIME: {time}\nLAT: {lat:.4f} AND LON: {lon:.4f}')
+            print(f'UTC TIME: {time}\nLAT: {lat} AND LON: {lon}')
             print(f'NO. OF SATELLITES USED FOR POS FIX: {no_sv}')
             append_to_csv(DATA_PATH_LOC,[time, no_sv, lat, lon])
             write_to_influxdb('LOC_OUTPUT',time,{'lat': lat, 'lon': lon, 'no_sv': no_sv})
