@@ -81,6 +81,7 @@ def main():
         # get location and time
         if NMEA_SEARCH_STRING_GGA in received_data and POS_BOOL:
             lat, lon, time = get_ll(received_data)
+            print(time)
             no_sv = get_no_sv(received_data)
             print(f'UTC TIME: {time}\nLAT: {lat} AND LON: {lon}')
             print(f'NO. OF SATELLITES USED FOR POS FIX: {no_sv}')
