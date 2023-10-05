@@ -54,10 +54,11 @@ def append_to_csv(filepath,data):
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(data)
 
-def write_to_influxdb(measurement_name,data):
+def write_to_influxdb(measurement_name,gps_time,data):
     json_body = [
         {
             "measurement": measurement_name,
+            "time": gps_time,
             "fields": data,
         }
     ]
@@ -68,26 +69,22 @@ def main():
     i = 0
     while True:
         received_data = (str)(SERIAL.readline())
-        
-        # get CN0 values for specific sv
-        if NMEA_SEARCH_STRING_GSV in received_data and CN0_BOOL:
-            lat, lon, time = get_ll(received_data)
-            sv_id, cn0 = get_cn0(received_data)
-            print(f'SATELLITE {sv_id} HAS A CN0 of {cn0}')
-            append_to_csv(DATA_PATH_CN0,[time, sv_id, cn0])
-            print(time)
-            write_to_influxdb('CN0_OUTPUT',{'gps_time': time, 'sv_id': sv_id, 'cn0': cn0})
-        
-        # get location and time
         if NMEA_SEARCH_STRING_GGA in received_data and POS_BOOL:
             lat, lon, time = get_ll(received_data)
-            print(time)
             no_sv = get_no_sv(received_data)
             print(f'UTC TIME: {time}\nLAT: {lat} AND LON: {lon}')
             print(f'NO. OF SATELLITES USED FOR POS FIX: {no_sv}')
             append_to_csv(DATA_PATH_LOC,[time, no_sv, lat, lon])
-            write_to_influxdb('LOC_OUTPUT',{'gps_time': time, 'lat': lat, 'lon': lon, 'no_sv': no_sv})
+            write_to_influxdb('LOC_OUTPUT',time,{'lat': lat, 'lon': lon, 'no_sv': no_sv})
 
+        # get CN0 values for specific sv
+        if NMEA_SEARCH_STRING_GSV in received_data and CN0_BOOL:
+            sv_id, cn0 = get_cn0(received_data)
+            print(f'SATELLITE {sv_id} HAS A CN0 of {cn0}')
+            append_to_csv(DATA_PATH_CN0,[time, sv_id, cn0])
+            write_to_influxdb('CN0_OUTPUT',time,{'sv_id': sv_id, 'cn0': cn0})
+        
+        # get location and 
         # failsafe if my keyboard stops working :)
         i += 1
         if i == 1000000:
