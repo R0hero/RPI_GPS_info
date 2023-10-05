@@ -13,7 +13,10 @@ def get_cn0(received_data):
     try:
         cn0 = int(cn0)
     except ValueError:
-        cn0 = int(cn0[:2])
+        if not cn0[:2] == '*4':
+            cn0 = int(cn0[:2])
+        else:
+            cn0 = -1
     return sv_id, cn0
 
 def get_ll(received_data):
