@@ -54,7 +54,7 @@ def append_to_csv(filepath,data):
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(data)
 
-def write_to_influxdb(measurement_name,gps_time,data):
+def write_to_influxdb(measurement_name, gps_time, data, sv_id=None):
     json_body = [
         {
             "measurement": measurement_name,
@@ -62,7 +62,13 @@ def write_to_influxdb(measurement_name,gps_time,data):
             "fields": data,
         }
     ]
+
+    if sv_id is not None:
+        # Add the sv_id tag only if it's provided and not None
+        json_body[0]["tags"] = {"sv_id": sv_id}
+
     CLIENT.write_points(json_body)
+
 
 def main():
     
@@ -82,7 +88,7 @@ def main():
             sv_id, cn0 = get_cn0(received_data)
             print(f'SATELLITE {sv_id} HAS A CN0 of {cn0}')
             append_to_csv(DATA_PATH_CN0,[time, sv_id, cn0])
-            write_to_influxdb('CN0_OUTPUT',time,{'sv_id': sv_id, 'cn0': cn0})
+            write_to_influxdb('CN0_OUTPUT',time,{'sv_id': sv_id, 'cn0': cn0}, sv_id)
         
         # get location and 
         # failsafe if my keyboard stops working :)
