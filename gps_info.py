@@ -10,6 +10,10 @@ def get_cn0(received_data):
     cn0 = GSV_string[7]
     if cn0 == '':
         cn0 = -1
+    try:
+        cn0 = int(cn0)
+    except ValueError:
+        cn0 = int(cn0[:2])
     return sv_id, cn0
 
 def get_ll(received_data):
