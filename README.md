@@ -7,3 +7,5 @@ The serial port will change depending on which pin is used on the Raspberry Pi.
 
 The script can be changed to extract info from different parts of the received data by looking at the spec sheet for the receiver.
 
+Update Nov 16 23:
+There has been implemented a custom filesink block for GNU Radio Companion, which will take in a maximum filesize and keep logging 10 files, which in total will add up to the specified maximum filesize. This is to be used together with the file_handling script, which will take an incidence log, if a set condition is met.
